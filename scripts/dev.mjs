@@ -48,6 +48,13 @@ function killDevTree() {
     spawnSync("taskkill", ["/PID", String(pid), "/T", "/F"], { stdio: "ignore" });
 }
 
+function buildBackend() {
+    // --force bypasses task's checksum cache: a failed build would otherwise be marked
+    // up-to-date and every later run (startup and watcher alike) silently skips the
+    // compile, leaving wavesrv on a stale binary
+    return runTask(["build:backend:quickdev:windows", "--force"]);
+}
+
 function spawnDev() {
     log("launching task electron:winquickdev");
     devProc = spawn(TASK_BIN, ["electron:winquickdev"], { cwd: ROOT, stdio: "inherit" });
@@ -86,7 +93,7 @@ async function rebuild() {
             return;
         }
     }
-    if (!runTask(["build:backend:quickdev:windows"])) {
+    if (!buildBackend()) {
         log("backend build failed, keeping current app running");
         rebuilding = false;
         return;
@@ -128,4 +135,8 @@ for (const dir of GO_DIRS) {
 }
 
 log(`watching ${GO_DIRS.map((d) => `${d}/**/*.go`).join(", ")} for hot rebuild`);
+if (!buildBackend()) {
+    log("backend build failed, aborting startup (fix the errors above and restart)");
+    process.exit(1);
+}
 spawnDev();

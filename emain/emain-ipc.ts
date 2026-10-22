@@ -530,4 +530,19 @@ export function initIpcHandlers() {
             return false;
         }
     });
+
+    electron.ipcMain.handle("choose-directory", async (event) => {
+        const ww = electron.BrowserWindow.fromWebContents(event.sender);
+        if (ww == null) {
+            return null;
+        }
+        const result = await electron.dialog.showOpenDialog(ww, {
+            title: "Choose Directory",
+            properties: ["openDirectory"],
+        });
+        if (result.canceled || result.filePaths.length == 0) {
+            return null;
+        }
+        return result.filePaths[0];
+    });
 }

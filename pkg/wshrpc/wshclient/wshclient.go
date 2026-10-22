@@ -101,9 +101,39 @@ func CheckGoVersionCommand(w *wshutil.WshRpc, opts *wshrpc.RpcOpts) (*wshrpc.Com
 	return resp, err
 }
 
+// command "claudesessiondelete", wshserver.ClaudeSessionDeleteCommand
+func ClaudeSessionDeleteCommand(w *wshutil.WshRpc, data wshrpc.CommandClaudeSessionDeleteData, opts *wshrpc.RpcOpts) error {
+	_, err := sendRpcRequestCallHelper[any](w, "claudesessiondelete", data, opts)
+	return err
+}
+
+// command "claudesessionrename", wshserver.ClaudeSessionRenameCommand
+func ClaudeSessionRenameCommand(w *wshutil.WshRpc, data wshrpc.CommandClaudeSessionRenameData, opts *wshrpc.RpcOpts) error {
+	_, err := sendRpcRequestCallHelper[any](w, "claudesessionrename", data, opts)
+	return err
+}
+
 // command "claudesessions", wshserver.ClaudeSessionsCommand
-func ClaudeSessionsCommand(w *wshutil.WshRpc, opts *wshrpc.RpcOpts) (*wshrpc.ClaudeSessionsRtnData, error) {
-	resp, err := sendRpcRequestCallHelper[*wshrpc.ClaudeSessionsRtnData](w, "claudesessions", nil, opts)
+func ClaudeSessionsCommand(w *wshutil.WshRpc, data wshrpc.CommandClaudeSessionsData, opts *wshrpc.RpcOpts) (*wshrpc.ClaudeSessionsRtnData, error) {
+	resp, err := sendRpcRequestCallHelper[*wshrpc.ClaudeSessionsRtnData](w, "claudesessions", data, opts)
+	return resp, err
+}
+
+// command "claudesessionsdelete", wshserver.ClaudeSessionsDeleteCommand
+func ClaudeSessionsDeleteCommand(w *wshutil.WshRpc, data wshrpc.CommandClaudeSessionsDeleteData, opts *wshrpc.RpcOpts) error {
+	_, err := sendRpcRequestCallHelper[any](w, "claudesessionsdelete", data, opts)
+	return err
+}
+
+// command "claudesessionsrename", wshserver.ClaudeSessionsRenameCommand
+func ClaudeSessionsRenameCommand(w *wshutil.WshRpc, data wshrpc.CommandClaudeSessionsRenameData, opts *wshrpc.RpcOpts) error {
+	_, err := sendRpcRequestCallHelper[any](w, "claudesessionsrename", data, opts)
+	return err
+}
+
+// command "claudesessionstransfer", wshserver.ClaudeSessionsTransferCommand
+func ClaudeSessionsTransferCommand(w *wshutil.WshRpc, data wshrpc.CommandClaudeSessionsTransferData, opts *wshrpc.RpcOpts) (*wshrpc.ClaudeSessionTransferRtnData, error) {
+	resp, err := sendRpcRequestCallHelper[*wshrpc.ClaudeSessionTransferRtnData](w, "claudesessionstransfer", data, opts)
 	return resp, err
 }
 

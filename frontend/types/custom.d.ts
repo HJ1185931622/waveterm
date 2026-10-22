@@ -135,6 +135,7 @@ declare global {
         doRefresh: () => void; // do-refresh
         getPathForFile: (file: File) => string; // webUtils.getPathForFile
         saveTextFile: (fileName: string, content: string) => Promise<boolean>; // save-text-file
+        chooseDirectory: () => Promise<string | null>; // choose-directory
         setIsActive: () => Promise<void>; // set-is-active
     };
 

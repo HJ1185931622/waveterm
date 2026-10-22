@@ -225,7 +225,14 @@ declare global {
         path: string;
         name: string;
         validpath: boolean;
+        numsessions: number;
+        maxmtime: number;
         sessions: ClaudeSessionInfo[];
+    };
+
+    // wshrpc.ClaudeSessionTransferRtnData
+    type ClaudeSessionTransferRtnData = {
+        newdir: string;
     };
 
     // wshrpc.ClaudeSessionsRtnData
@@ -298,6 +305,41 @@ declare global {
         gopath: string;
         goversion: string;
         errorstring?: string;
+    };
+
+    // wshrpc.CommandClaudeSessionDeleteData
+    type CommandClaudeSessionDeleteData = {
+        dir: string;
+        sessionid: string;
+    };
+
+    // wshrpc.CommandClaudeSessionRenameData
+    type CommandClaudeSessionRenameData = {
+        dir: string;
+        sessionid: string;
+        title: string;
+    };
+
+    // wshrpc.CommandClaudeSessionsData
+    type CommandClaudeSessionsData = {
+        detaildirs: string[];
+    };
+
+    // wshrpc.CommandClaudeSessionsDeleteData
+    type CommandClaudeSessionsDeleteData = {
+        dir: string;
+    };
+
+    // wshrpc.CommandClaudeSessionsRenameData
+    type CommandClaudeSessionsRenameData = {
+        dir: string;
+        name: string;
+    };
+
+    // wshrpc.CommandClaudeSessionsTransferData
+    type CommandClaudeSessionsTransferData = {
+        dir: string;
+        newpath: string;
     };
 
     // wshrpc.CommandConnServerInitData

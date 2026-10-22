@@ -6,7 +6,7 @@ import { globalStore } from "@/app/store/jotaiStore";
 import { RpcApi } from "@/app/store/wshclientapi";
 import { TabRpcClient } from "@/app/store/wshrpcutil";
 import { splitORef } from "@/app/store/wos";
-import { sleep, stringToBase64 } from "@/util/util";
+import { fireAndForget, sleep, stringToBase64 } from "@/util/util";
 import * as jotai from "jotai";
 
 export const ClaudeSessionMetaKey = "claude:sessionid";
@@ -45,7 +45,10 @@ export class ClaudeSessionsModel {
             globalStore.set(this.loadingAtom, true);
         }
         try {
-            const rtn = await RpcApi.ClaudeSessionsCommand(TabRpcClient, {});
+            // only expanded projects get their session lists parsed server-side, so the
+            // first paint waits on project summaries rather than every session file
+            const detaildirs = Array.from(globalStore.get(this.expandedProjectsAtom));
+            const rtn = await RpcApi.ClaudeSessionsCommand(TabRpcClient, { detaildirs });
             const projects = rtn?.projects ?? [];
             globalStore.set(this.sessionsAtom, projects);
             globalStore.set(this.errorAtom, "");
@@ -75,8 +78,7 @@ export class ClaudeSessionsModel {
         let newestProject: ClaudeSessionProject = null;
         let newestMTime = 0;
         for (const project of projects) {
-            // sessions are sorted by mtime descending, so the first entry is the newest
-            const newest = project.sessions?.[0]?.mtime ?? 0;
+            const newest = project.maxmtime ?? 0;
             if (newest > newestMTime) {
                 newestMTime = newest;
                 newestProject = project;
@@ -96,6 +98,111 @@ export class ClaudeSessionsModel {
             expanded.add(dir);
         }
         globalStore.set(this.expandedProjectsAtom, expanded);
+    }
+
+    expandProject(dir: string): void {
+        const expanded = new Set(globalStore.get(this.expandedProjectsAtom));
+        expanded.add(dir);
+        globalStore.set(this.expandedProjectsAtom, expanded);
+        fireAndForget(() => this.refresh(true));
+    }
+
+    private collapseProject(dir: string): void {
+        const expanded = new Set(globalStore.get(this.expandedProjectsAtom));
+        expanded.delete(dir);
+        globalStore.set(this.expandedProjectsAtom, expanded);
+    }
+
+    async renameProject(project: ClaudeSessionProject, name: string): Promise<void> {
+        const trimmedName = name.trim();
+        if (trimmedName == "") {
+            return;
+        }
+        try {
+            await RpcApi.ClaudeSessionsRenameCommand(TabRpcClient, { dir: project.dir, name: trimmedName });
+        } catch (e) {
+            window.alert(`Failed to rename project: ${e?.message ?? String(e)}`);
+            return;
+        }
+        await this.refresh(true);
+    }
+
+    async deleteProject(project: ClaudeSessionProject): Promise<void> {
+        try {
+            await RpcApi.ClaudeSessionsDeleteCommand(TabRpcClient, { dir: project.dir });
+        } catch (e) {
+            window.alert(`Failed to delete project: ${e?.message ?? String(e)}`);
+            return;
+        }
+        this.collapseProject(project.dir);
+        await this.refresh(true);
+    }
+
+    async transferProject(project: ClaudeSessionProject, newPath: string): Promise<void> {
+        let newDir = "";
+        try {
+            const rtn = await RpcApi.ClaudeSessionsTransferCommand(TabRpcClient, { dir: project.dir, newpath: newPath });
+            newDir = rtn?.newdir ?? "";
+        } catch (e) {
+            window.alert(`Failed to transfer project: ${e?.message ?? String(e)}`);
+            return;
+        }
+        this.collapseProject(project.dir);
+        if (newDir != "") {
+            this.expandProject(newDir);
+        }
+        await this.refresh(true);
+    }
+
+    async deleteSession(project: ClaudeSessionProject, session: ClaudeSessionInfo): Promise<void> {
+        try {
+            await RpcApi.ClaudeSessionDeleteCommand(TabRpcClient, { dir: project.dir, sessionid: session.sessionid });
+        } catch (e) {
+            window.alert(`Failed to delete session: ${e?.message ?? String(e)}`);
+            return;
+        }
+        await this.refresh(true);
+    }
+
+    // pure data-level rename: appends the same custom-title record claude's /rename
+    // writes, without resuming or opening the session anywhere
+    async renameSession(project: ClaudeSessionProject, session: ClaudeSessionInfo, name: string): Promise<void> {
+        const trimmedName = name.trim();
+        if (trimmedName == "") {
+            return;
+        }
+        try {
+            await RpcApi.ClaudeSessionRenameCommand(TabRpcClient, { dir: project.dir, sessionid: session.sessionid, title: trimmedName });
+        } catch (e) {
+            window.alert(`Failed to rename session: ${e?.message ?? String(e)}`);
+            return;
+        }
+        await this.refresh(true);
+    }
+
+    async createSession(project: ClaudeSessionProject, name: string): Promise<void> {
+        // the name lands inside double quotes in shell input, so strip the characters
+        // that would break out of the quoting or interpolate in bash/powershell
+        const safeName = name.replace(/[\\"`$]/g, "");
+        if (safeName == "") {
+            return;
+        }
+        const blockId = await this.createProjectBlock(project);
+        await this.sendShellInput(blockId, `claude -n "${safeName}"\r`);
+    }
+
+    private async createProjectBlock(project: ClaudeSessionProject): Promise<string> {
+        const meta: Record<string, any> = {
+            view: "term",
+            controller: "shell",
+        };
+        if (project.validpath) {
+            meta["cmd:cwd"] = project.path;
+        }
+        const tabId = globalStore.get(atoms.staticTabId);
+        const blockRef = await RpcApi.CreateBlockCommand(TabRpcClient, { tabid: tabId, blockdef: { meta }, focused: true });
+        const [, blockId] = splitORef(blockRef);
+        return blockId;
     }
 
     private async findBlockForSession(sessionId: string): Promise<string | null> {

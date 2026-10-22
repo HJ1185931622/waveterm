@@ -162,7 +162,12 @@ type WshRpcInterface interface {
 	WaveAIGetToolDiffCommand(ctx context.Context, data CommandWaveAIGetToolDiffData) (*CommandWaveAIGetToolDiffRtnData, error)
 
 	// claude code sessions
-	ClaudeSessionsCommand(ctx context.Context) (*ClaudeSessionsRtnData, error)
+	ClaudeSessionsCommand(ctx context.Context, data CommandClaudeSessionsData) (*ClaudeSessionsRtnData, error)
+	ClaudeSessionsDeleteCommand(ctx context.Context, data CommandClaudeSessionsDeleteData) error
+	ClaudeSessionsTransferCommand(ctx context.Context, data CommandClaudeSessionsTransferData) (*ClaudeSessionTransferRtnData, error)
+	ClaudeSessionsRenameCommand(ctx context.Context, data CommandClaudeSessionsRenameData) error
+	ClaudeSessionDeleteCommand(ctx context.Context, data CommandClaudeSessionDeleteData) error
+	ClaudeSessionRenameCommand(ctx context.Context, data CommandClaudeSessionRenameData) error
 
 	// screenshot
 	CaptureBlockScreenshotCommand(ctx context.Context, data CommandCaptureBlockScreenshotData) (string, error)
@@ -492,11 +497,49 @@ type ClaudeSessionProject struct {
 	Path      string               `json:"path"`
 	Name      string               `json:"name"`
 	ValidPath bool                 `json:"validpath"`
-	Sessions  []*ClaudeSessionInfo `json:"sessions"`
+	// summary fields are populated without opening session files; Sessions stays nil
+	// for projects outside detaildirs so the first paint does not wait on file io
+	NumSessions int                 `json:"numsessions"`
+	MaxMTime    int64               `json:"maxmtime"`
+	Sessions    []*ClaudeSessionInfo `json:"sessions"`
 }
 
 type ClaudeSessionsRtnData struct {
 	Projects []*ClaudeSessionProject `json:"projects"`
+}
+
+type CommandClaudeSessionsData struct {
+	// only the projects in these dirs get their session lists parsed
+	DetailDirs []string `json:"detaildirs"`
+}
+
+type CommandClaudeSessionsDeleteData struct {
+	Dir string `json:"dir"`
+}
+
+type CommandClaudeSessionsRenameData struct {
+	Dir  string `json:"dir"`
+	Name string `json:"name"`
+}
+
+type CommandClaudeSessionsTransferData struct {
+	Dir     string `json:"dir"`
+	NewPath string `json:"newpath"`
+}
+
+type ClaudeSessionTransferRtnData struct {
+	NewDir string `json:"newdir"`
+}
+
+type CommandClaudeSessionDeleteData struct {
+	Dir       string `json:"dir"`
+	SessionId string `json:"sessionid"`
+}
+
+type CommandClaudeSessionRenameData struct {
+	Dir       string `json:"dir"`
+	SessionId string `json:"sessionid"`
+	Title     string `json:"title"`
 }
 
 type WorkspaceInfoData struct {

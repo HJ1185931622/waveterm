@@ -102,10 +102,40 @@ export class RpcApiType {
         return client.wshRpcCall("checkgoversion", null, opts);
     }
 
+    // command "claudesessiondelete" [call]
+    ClaudeSessionDeleteCommand(client: WshClient, data: CommandClaudeSessionDeleteData, opts?: RpcOpts): Promise<void> {
+        if (this.mockClient) return this.mockClient.mockWshRpcCall(client, "claudesessiondelete", data, opts);
+        return client.wshRpcCall("claudesessiondelete", data, opts);
+    }
+
+    // command "claudesessionrename" [call]
+    ClaudeSessionRenameCommand(client: WshClient, data: CommandClaudeSessionRenameData, opts?: RpcOpts): Promise<void> {
+        if (this.mockClient) return this.mockClient.mockWshRpcCall(client, "claudesessionrename", data, opts);
+        return client.wshRpcCall("claudesessionrename", data, opts);
+    }
+
     // command "claudesessions" [call]
-    ClaudeSessionsCommand(client: WshClient, opts?: RpcOpts): Promise<ClaudeSessionsRtnData> {
-        if (this.mockClient) return this.mockClient.mockWshRpcCall(client, "claudesessions", null, opts);
-        return client.wshRpcCall("claudesessions", null, opts);
+    ClaudeSessionsCommand(client: WshClient, data: CommandClaudeSessionsData, opts?: RpcOpts): Promise<ClaudeSessionsRtnData> {
+        if (this.mockClient) return this.mockClient.mockWshRpcCall(client, "claudesessions", data, opts);
+        return client.wshRpcCall("claudesessions", data, opts);
+    }
+
+    // command "claudesessionsdelete" [call]
+    ClaudeSessionsDeleteCommand(client: WshClient, data: CommandClaudeSessionsDeleteData, opts?: RpcOpts): Promise<void> {
+        if (this.mockClient) return this.mockClient.mockWshRpcCall(client, "claudesessionsdelete", data, opts);
+        return client.wshRpcCall("claudesessionsdelete", data, opts);
+    }
+
+    // command "claudesessionsrename" [call]
+    ClaudeSessionsRenameCommand(client: WshClient, data: CommandClaudeSessionsRenameData, opts?: RpcOpts): Promise<void> {
+        if (this.mockClient) return this.mockClient.mockWshRpcCall(client, "claudesessionsrename", data, opts);
+        return client.wshRpcCall("claudesessionsrename", data, opts);
+    }
+
+    // command "claudesessionstransfer" [call]
+    ClaudeSessionsTransferCommand(client: WshClient, data: CommandClaudeSessionsTransferData, opts?: RpcOpts): Promise<ClaudeSessionTransferRtnData> {
+        if (this.mockClient) return this.mockClient.mockWshRpcCall(client, "claudesessionstransfer", data, opts);
+        return client.wshRpcCall("claudesessionstransfer", data, opts);
     }
 
     // command "connconnect" [call]

@@ -18,6 +18,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/skratchdot/open-golang/open"
@@ -62,7 +63,11 @@ import (
 
 var InvalidWslDistroNames = []string{"docker-desktop", "docker-desktop-data"}
 
-type WshServer struct{}
+type WshServer struct {
+	claudeSessionCache     map[string]claudeSessionCacheEntry
+	claudeSessionDirCwds   map[string]string
+	claudeSessionCacheLock sync.Mutex
+}
 
 func (*WshServer) WshServerImpl() {}
 

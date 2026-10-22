@@ -436,6 +436,8 @@ function convertMenuDefArrToMenu(
             },
             checked: menuDef.checked,
             enabled: menuDef.enabled,
+            visible: menuDef.visible,
+            sublabel: menuDef.sublabel,
         };
         if (menuDef.submenu != null) {
             menuItemTemplate.submenu = convertMenuDefArrToMenu(webContents, menuDef.submenu, menuState);

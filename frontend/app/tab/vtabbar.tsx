@@ -171,7 +171,6 @@ function VTabWrapper({
             isDragging={isDragging}
             isReordering={isReordering}
             onSelect={onSelect}
-            onClose={onClose}
             onRename={onRename}
             onContextMenu={handleContextMenu}
             onDragStart={onDragStart}

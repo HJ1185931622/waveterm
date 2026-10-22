@@ -1,7 +1,7 @@
 // Copyright 2026, Command Line Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AIPanel } from "@/app/aipanel/aipanel";
+import { ClaudeSessionsPanel } from "@/app/claudesessions/claudesessions";
 import { ErrorBoundary } from "@/app/element/errorboundary";
 import { CenteredDiv } from "@/app/element/quickelems";
 import { ModalsRenderer } from "@/app/modals/modalsrenderer";
@@ -147,7 +147,7 @@ const WorkspaceElem = memo(() => {
                                         ref={aiPanelWrapperRef}
                                         className={`w-full h-full pr-0.5 ${aiPanelVisible ? "" : "opacity-0"}`}
                                     >
-                                        {tabId !== "" && <AIPanel roundTopLeft={showLeftTabBar} />}
+                                        {tabId !== "" && <ClaudeSessionsPanel roundTopLeft={showLeftTabBar} />}
                                     </div>
                                 </Panel>
                             </PanelGroup>

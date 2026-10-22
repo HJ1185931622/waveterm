@@ -24,7 +24,6 @@ interface VTabProps {
     isDragging: boolean;
     isReordering: boolean;
     onSelect: () => void;
-    onClose?: () => void;
     onRename?: (newName: string) => void;
     onContextMenu?: (event: React.MouseEvent<HTMLDivElement>) => void;
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void;
@@ -42,7 +41,6 @@ export function VTab({
     isDragging,
     isReordering,
     onSelect,
-    onClose,
     onRename,
     onContextMenu,
     onDragStart,
@@ -188,8 +186,7 @@ export function VTab({
             <div
                 ref={editableRef}
                 className={cn(
-                    "min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap transition-[padding-right] pr-3",
-                    onClose && !isReordering && "group-hover:pr-6",
+                    "min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap pr-3",
                     isEditable && "rounded-[2px] bg-white/15 outline-none"
                 )}
                 contentEditable={isEditable}
@@ -202,22 +199,6 @@ export function VTab({
             >
                 {tab.name}
             </div>
-            {onClose && (
-                <button
-                    type="button"
-                    className={cn(
-                        "absolute top-1/2 right-0 shrink-0 -translate-y-1/2 cursor-pointer py-1 pl-1 pr-3 text-secondary transition",
-                        isReordering ? "opacity-0" : "opacity-0 group-hover:opacity-100 hover:text-primary"
-                    )}
-                    onClick={(event) => {
-                        event.stopPropagation();
-                        onClose();
-                    }}
-                    aria-label="Close tab"
-                >
-                    <i className="fa fa-solid fa-xmark" />
-                </button>
-            )}
         </div>
     );
 }

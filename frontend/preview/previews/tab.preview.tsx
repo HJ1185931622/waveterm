@@ -98,7 +98,6 @@ export function TabPreview() {
                         badges={tab.badges ?? null}
                         flagColor={tab.flagColor ?? null}
                         onClick={() => setActiveTabId(tab.tabId)}
-                        onClose={() => console.log("close", tab.tabId)}
                         onDragStart={() => {}}
                         onContextMenu={() => {}}
                         onRename={(newName) => {

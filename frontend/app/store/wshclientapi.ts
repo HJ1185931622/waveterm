@@ -102,6 +102,12 @@ export class RpcApiType {
         return client.wshRpcCall("checkgoversion", null, opts);
     }
 
+    // command "claudesessions" [call]
+    ClaudeSessionsCommand(client: WshClient, opts?: RpcOpts): Promise<ClaudeSessionsRtnData> {
+        if (this.mockClient) return this.mockClient.mockWshRpcCall(client, "claudesessions", null, opts);
+        return client.wshRpcCall("claudesessions", null, opts);
+    }
+
     // command "connconnect" [call]
     ConnConnectCommand(client: WshClient, data: ConnRequest, opts?: RpcOpts): Promise<void> {
         if (this.mockClient) return this.mockClient.mockWshRpcCall(client, "connconnect", data, opts);

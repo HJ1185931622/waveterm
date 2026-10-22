@@ -1,7 +1,6 @@
 // Copyright 2026, Command Line Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { WaveAIModel } from "@/app/aipanel/waveai-model";
 import { globalStore } from "@/app/store/jotaiStore";
 import { isBuilderWindow } from "@/app/store/windowtype";
 import * as WOS from "@/app/store/wos";
@@ -53,7 +52,6 @@ class WorkspaceLayoutModel {
     private vtabWidth: number;
     private vtabVisible: boolean;
     private transitionTimeoutRef: NodeJS.Timeout | null = null;
-    private focusTimeoutRef: NodeJS.Timeout | null = null;
     private debouncedPersistAIWidth: () => void;
     private debouncedPersistVTabWidth: () => void;
     widgetsSidebarVisibleAtom: jotai.Atom<boolean>;
@@ -385,11 +383,7 @@ class WorkspaceLayoutModel {
 
     // ---- Toggle visibility ----
 
-    setAIPanelVisible(visible: boolean, opts?: { nofocus?: boolean }): void {
-        if (this.focusTimeoutRef != null) {
-            clearTimeout(this.focusTimeoutRef);
-            this.focusTimeoutRef = null;
-        }
+    setAIPanelVisible(visible: boolean): void {
         const wasVisible = this.aiPanelVisible;
         this.aiPanelVisible = visible;
         if (visible && !wasVisible) {
@@ -405,14 +399,7 @@ class WorkspaceLayoutModel {
         this.syncPanelCollapse();
         this.commitLayouts(window.innerWidth);
 
-        if (visible) {
-            if (!opts?.nofocus) {
-                this.focusTimeoutRef = setTimeout(() => {
-                    WaveAIModel.getInstance().focusInput();
-                    this.focusTimeoutRef = null;
-                }, 350);
-            }
-        } else {
+        if (!visible) {
             const layoutModel = getLayoutModelForStaticTab();
             const focusedNode = globalStore.get(layoutModel.focusedNode);
             if (focusedNode == null) {

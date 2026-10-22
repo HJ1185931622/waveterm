@@ -65,7 +65,7 @@ export class TabClient extends WshClient {
     async handle_waveaiaddcontext(rh: RpcResponseHelper, data: CommandWaveAIAddContextData): Promise<void> {
         const workspaceLayoutModel = WorkspaceLayoutModel.getInstance();
         if (!workspaceLayoutModel.getAIPanelVisible()) {
-            workspaceLayoutModel.setAIPanelVisible(true, { nofocus: true });
+            workspaceLayoutModel.setAIPanelVisible(true);
         }
 
         const model = WaveAIModel.getInstance();

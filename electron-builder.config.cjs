@@ -97,6 +97,9 @@ const config = {
     },
     win: {
         target: ["nsis", "msi", "zip"],
+        // rcedit resource editing pulls the winCodeSign toolset, whose archive contains
+        // macOS-only symlinks that cannot be extracted without Windows symlink privileges
+        signAndEditExecutable: false,
         signtoolOptions: windowsShouldSign && {
             signingHashAlgorithms: ["sha256"],
             publisherName: "Command Line Inc",

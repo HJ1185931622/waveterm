@@ -6,7 +6,6 @@ import { refocusNode } from "@/app/store/global";
 import { getTabModelByTabId } from "@/app/store/tab-model";
 import { TabRpcClient } from "@/app/store/wshrpcutil";
 import { WaveEnv, WaveEnvSubset, useWaveEnv } from "@/app/waveenv/waveenv";
-import { Button } from "@/element/button";
 import { validateCssColor } from "@/util/color-validator";
 import { fireAndForget } from "@/util/util";
 import clsx from "clsx";
@@ -43,7 +42,6 @@ interface TabVProps {
     badges?: Badge[] | null;
     flagColor?: string | null;
     onClick: () => void;
-    onClose: (event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null) => void;
     onDragStart: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     onContextMenu: (e: React.MouseEvent<HTMLDivElement>) => void;
     onRename: (newName: string) => void;
@@ -63,7 +61,6 @@ const TabV = forwardRef<HTMLDivElement, TabVProps>((props, ref) => {
         badges,
         flagColor,
         onClick,
-        onClose,
         onDragStart,
         onContextMenu,
         onRename,
@@ -174,10 +171,6 @@ const TabV = forwardRef<HTMLDivElement, TabVProps>((props, ref) => {
         }
     }, [isNew, tabWidth]);
 
-    const handleMouseDownOnClose = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        event.stopPropagation();
-    };
-
     return (
         <div
             ref={tabRef}
@@ -205,14 +198,6 @@ const TabV = forwardRef<HTMLDivElement, TabVProps>((props, ref) => {
                     {displayName}
                 </div>
                 <TabBadges badges={badges} flagColor={flagColor} />
-                <Button
-                    className="ghost grey close"
-                    onClick={onClose}
-                    onMouseDown={handleMouseDownOnClose}
-                    title="Close Tab"
-                >
-                    <i className="fa fa-solid fa-xmark" />
-                </Button>
             </div>
         </div>
     );
@@ -305,7 +290,6 @@ const TabInner = forwardRef<HTMLDivElement, TabProps>((props, ref) => {
             badges={badges}
             flagColor={flagColor}
             onClick={handleTabClick}
-            onClose={onClose}
             onDragStart={onDragStart}
             onContextMenu={handleContextMenu}
             onRename={handleRename}

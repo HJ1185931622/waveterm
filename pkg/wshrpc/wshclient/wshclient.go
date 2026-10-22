@@ -101,6 +101,12 @@ func CheckGoVersionCommand(w *wshutil.WshRpc, opts *wshrpc.RpcOpts) (*wshrpc.Com
 	return resp, err
 }
 
+// command "claudesessions", wshserver.ClaudeSessionsCommand
+func ClaudeSessionsCommand(w *wshutil.WshRpc, opts *wshrpc.RpcOpts) (*wshrpc.ClaudeSessionsRtnData, error) {
+	resp, err := sendRpcRequestCallHelper[*wshrpc.ClaudeSessionsRtnData](w, "claudesessions", nil, opts)
+	return resp, err
+}
+
 // command "connconnect", wshserver.ConnConnectCommand
 func ConnConnectCommand(w *wshutil.WshRpc, data wshrpc.ConnRequest, opts *wshrpc.RpcOpts) error {
 	_, err := sendRpcRequestCallHelper[any](w, "connconnect", data, opts)

@@ -161,6 +161,9 @@ type WshRpcInterface interface {
 	WaveAIAddContextCommand(ctx context.Context, data CommandWaveAIAddContextData) error
 	WaveAIGetToolDiffCommand(ctx context.Context, data CommandWaveAIGetToolDiffData) (*CommandWaveAIGetToolDiffRtnData, error)
 
+	// claude code sessions
+	ClaudeSessionsCommand(ctx context.Context) (*ClaudeSessionsRtnData, error)
+
 	// screenshot
 	CaptureBlockScreenshotCommand(ctx context.Context, data CommandCaptureBlockScreenshotData) (string, error)
 
@@ -475,6 +478,25 @@ type WaveInfoData struct {
 	BuildTime string `json:"buildtime"`
 	ConfigDir string `json:"configdir"`
 	DataDir   string `json:"datadir"`
+}
+
+type ClaudeSessionInfo struct {
+	SessionId string `json:"sessionid"`
+	Title     string `json:"title"`
+	MTime     int64  `json:"mtime"`
+	Active    bool   `json:"active"`
+}
+
+type ClaudeSessionProject struct {
+	Dir       string               `json:"dir"`
+	Path      string               `json:"path"`
+	Name      string               `json:"name"`
+	ValidPath bool                 `json:"validpath"`
+	Sessions  []*ClaudeSessionInfo `json:"sessions"`
+}
+
+type ClaudeSessionsRtnData struct {
+	Projects []*ClaudeSessionProject `json:"projects"`
 }
 
 type WorkspaceInfoData struct {

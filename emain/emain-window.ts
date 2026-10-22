@@ -23,7 +23,10 @@ import { delay, ensureBoundsAreVisible, waveKeyToElectronKey } from "./emain-uti
 import { ElectronWshClient } from "./emain-wsh";
 import { updater } from "./updater";
 
-const DevInitTimeoutMs = 5000;
+// vite cold-compiles plus slow font CDNs can push a dev tab's first load well past 5s;
+// timing out here abandons the tab (savedInitOpts is not yet set, so the wave-init
+// re-send path in emain-ipc never fires) and leaves it permanently white
+const DevInitTimeoutMs = 30000;
 
 export type WindowOpts = {
     unamePlatform: NodeJS.Platform;
